@@ -3,6 +3,7 @@ import { auth, firestore } from "./firebase";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import Signup from "./Signup";
+import Signin from "./Signin";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
@@ -26,7 +27,7 @@ const App = () => {
     const tasksRef = firestore.collection("tasks");
     tasksRef
       .where("userId", "==", userId)
-      .orderBy("createdAt")
+      .orderBy("createdAt", "desc")
       .get()
       .then((querySnapshot) => {
         const fetchedTasks = querySnapshot.docs.map((doc) => ({
@@ -55,6 +56,33 @@ const App = () => {
       });
   };
 
+  // const handleSignin = (email, password) => {
+  //   auth
+  //     .signInWithEmailAndPassword(email, password)
+  //     .then((userCredential) => {
+  //       const user = userCredential.user;
+  //       setUser(user);
+  //       console.log("Signin:", user.email);
+  //       fetchTasks(user.uid);
+  //     })
+  //     .catch((error) => {
+  //       console.log("Signin error:", error.message);
+  //     });
+  // };
+  const handleSignin = (email, password) => {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        setUser(user);
+        console.log("Signin:", user.email);
+        fetchTasks(user.uid); // Fetch tasks after signing in
+      })
+      .catch((error) => {
+        console.log("Signin error:", error.message);
+      });
+  };
+
   const handleSignout = () => {
     auth
       .signOut()
@@ -68,6 +96,24 @@ const App = () => {
       });
   };
 
+  // const addTask = (task) => {
+  //   const newTask = {
+  //     ...task,
+  //     userId: user.uid,
+  //     createdAt: new Date(),
+  //   };
+
+  //   firestore
+  //     .collection("tasks")
+  //     .add(newTask)
+  //     .then((docRef) => {
+  //       setTasks([...tasks, { id: docRef.id, ...newTask }]);
+  //     })
+  //     .catch((error) => {
+  //       console.log("Add task error:", error.message);
+  //     });
+  // };
+
   const addTask = (task) => {
     const newTask = {
       ...task,
@@ -75,14 +121,19 @@ const App = () => {
       createdAt: new Date(),
     };
 
+    setTasks((prevTasks) => [...prevTasks, newTask]); // Update tasks state optimistically
+
     firestore
       .collection("tasks")
       .add(newTask)
       .then((docRef) => {
-        setTasks([...tasks, { id: docRef.id, ...newTask }]);
+        console.log("Task added successfully");
+        // Task added to Firestore, no further action needed
       })
       .catch((error) => {
         console.log("Add task error:", error.message);
+        // Revert the optimistic update in case of an error
+        setTasks((prevTasks) => prevTasks.filter((task) => task !== newTask));
       });
   };
 
@@ -110,7 +161,10 @@ const App = () => {
           <TaskList tasks={tasks} deleteTask={deleteTask} />
         </>
       ) : (
-        <Signup handleSignup={handleSignup} />
+        <>
+          <Signup handleSignup={handleSignup} />
+          <Signin handleSignin={handleSignin} />
+        </>
       )}
     </div>
   );
