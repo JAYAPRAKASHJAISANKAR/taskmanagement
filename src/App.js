@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect } from "react";
 import { auth, firestore } from "./firebase";
 import TaskForm from "./TaskForm";
@@ -56,19 +57,6 @@ const App = () => {
       });
   };
 
-  // const handleSignin = (email, password) => {
-  //   auth
-  //     .signInWithEmailAndPassword(email, password)
-  //     .then((userCredential) => {
-  //       const user = userCredential.user;
-  //       setUser(user);
-  //       console.log("Signin:", user.email);
-  //       fetchTasks(user.uid);
-  //     })
-  //     .catch((error) => {
-  //       console.log("Signin error:", error.message);
-  //     });
-  // };
   const handleSignin = (email, password) => {
     auth
       .signInWithEmailAndPassword(email, password)
@@ -76,7 +64,7 @@ const App = () => {
         const user = userCredential.user;
         setUser(user);
         console.log("Signin:", user.email);
-        fetchTasks(user.uid); // Fetch tasks after signing in
+        fetchTasks(user.uid);
       })
       .catch((error) => {
         console.log("Signin error:", error.message);
@@ -95,24 +83,6 @@ const App = () => {
         console.log("Signout error:", error.message);
       });
   };
-
-  // const addTask = (task) => {
-  //   const newTask = {
-  //     ...task,
-  //     userId: user.uid,
-  //     createdAt: new Date(),
-  //   };
-
-  //   firestore
-  //     .collection("tasks")
-  //     .add(newTask)
-  //     .then((docRef) => {
-  //       setTasks([...tasks, { id: docRef.id, ...newTask }]);
-  //     })
-  //     .catch((error) => {
-  //       console.log("Add task error:", error.message);
-  //     });
-  // };
 
   const addTask = (task) => {
     const newTask = {

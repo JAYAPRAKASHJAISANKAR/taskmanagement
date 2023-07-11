@@ -2,8 +2,13 @@
 import React from "react";
 
 const TaskList = ({ tasks, deleteTask, updateTask }) => {
-  const handleDelete = (taskId) => {
-    deleteTask(taskId);
+ 
+  const handleDelete = async (taskId) => {
+    try {
+      await deleteTask(taskId);
+    } catch (error) {
+      console.log("Delete task error:", error.message);
+    }
   };
 
   const handleComplete = (taskId) => {
@@ -11,6 +16,8 @@ const TaskList = ({ tasks, deleteTask, updateTask }) => {
     const updatedTask = { ...task, completed: !task.completed };
     updateTask(taskId, updatedTask);
   };
+
+  
 
   return (
     <ul>
@@ -28,5 +35,7 @@ const TaskList = ({ tasks, deleteTask, updateTask }) => {
     </ul>
   );
 };
+
+
 
 export default TaskList;
